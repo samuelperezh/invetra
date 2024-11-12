@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
+const { dbConnect } = require('@/utils/mongodb');
 
-export function GET() {
+export async function GET() {
+    dbConnect();
     return NextResponse.json(
         { message: "Hello World" }
     );
