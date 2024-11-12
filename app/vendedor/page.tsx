@@ -23,7 +23,7 @@ export default function VendedorPage() {
           <h1 className="text-3xl font-bold">Portal del Vendedor</h1>
           <div className="flex items-center gap-4">
             <span className="text-muted-foreground">
-              Bienvenido, {user ? user.name : "Invitado"}
+              Bienvenido, {user ? user.nombre : "Invitado"}
             </span>
             <Button
               variant="outline"

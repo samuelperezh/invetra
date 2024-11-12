@@ -20,22 +20,13 @@ export default function BodegaPage() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold text-center mb-8">Panel de Bodega</h1>
-        <AuthForm role="bodega" />
-      </div>
-    );
-  }
-
   return (
     <ProtectedRoute role="bodega">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Panel de Bodega</h1>
           <div className="flex items-center gap-4">
-            <span className="text-muted-foreground">Bienvenido, {user.name}</span>
+            {user && <span className="text-muted-foreground">Bienvenido, {user.nombre}</span>}
             <Button
               variant="outline"
               size="sm"

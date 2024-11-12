@@ -13,22 +13,13 @@ export default function AdminPage() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  if (!user) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <h1 className="text-3xl font-bold text-center mb-8">Panel de Administración</h1>
-        <AuthForm role="admin" />
-      </div>
-    );
-  }
-
   return (
     <ProtectedRoute role="admin">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Panel de Administración</h1>
           <div className="flex items-center gap-4">
-            <span className="text-muted-foreground">Bienvenido, {user.name}</span>
+            <span className="text-muted-foreground">Bienvenido, {user ? user.nombre : "Invitado"}</span>
             <Button
               variant="outline"
               size="sm"
