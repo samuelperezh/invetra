@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/lib/auth"; // Import the auth context
+import { useAuth } from "@/lib/auth";
 
 export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ export function AuthForm() {
   });
   const router = useRouter();
   const { toast } = useToast();
-  const { setUser } = useAuth(); // Destructure setUser from useAuth
+  const { setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +56,6 @@ export function AuthForm() {
             description: "El rol seleccionado no coincide con el usuario.",
           });
         } else {
-          // Update the auth context with the user data
           setUser(user);
 
           toast({

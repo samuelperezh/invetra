@@ -1,9 +1,27 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import { PackageSearch, Users, Warehouse } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export default function Home() {
+  const router = useRouter();
+  const { setUser } = useAuth();
+
+  useEffect(() => {
+    const storedUser = Cookies.get("user");
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setUser(user);
+      router.push(`/${user.rol}`);
+    }
+  }, [router, setUser]);
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-muted">
       <div className="container mx-auto px-4 py-16">

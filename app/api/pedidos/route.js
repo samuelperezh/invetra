@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Pedido from '@/models/Pedido';
+import Usuario from '@/models/Usuario'; // Import the Usuario model
 import { dbConnect } from '@/utils/mongodb';
 
 // Helper function to fetch user details
@@ -20,6 +21,19 @@ async function fetchProductDetails(productId) {
   return response.json();
 }
 
+// Helper function to update product quantity
+async function updateProductQuantity(productId, newQuantity) {
+  const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cantidad_disponible: newQuantity })
+  });
+  if (!response.ok) {
+    throw new Error(`Error updating product quantity for producto_id ${productId}`);
+  }
+  return response.json();
+}
+
 // GET all pedidos
 export async function GET() {
   await dbConnect();
@@ -27,7 +41,8 @@ export async function GET() {
     const pedidos = await Pedido.find().populate('vendedor_id asignado_a items.producto_id');
     return NextResponse.json(pedidos);
   } catch (error) {
-    return NextResponse.json({ message: 'Error al obtener los pedidos' }, { status: 500 });
+    console.error('Error al obtener los pedidos:', error);
+    return NextResponse.json({ message: 'Error al obtener los pedidos', error: error.message }, { status: 500 });
   }
 }
 
@@ -57,6 +72,12 @@ export async function POST(request) {
       if (!producto) {
         return NextResponse.json({ message: `producto_id ${item.producto_id} no válido o no existe` }, { status: 400 });
       }
+      if (item.cantidad_solicitada > producto.cantidad_disponible) {
+        return NextResponse.json({ message: `La cantidad solicitada para ${producto.nombre} es mayor a la cantidad disponible` }, { status: 400 });
+      }
+      // Update product quantity
+      const newQuantity = producto.cantidad_disponible - item.cantidad_solicitada;
+      await updateProductQuantity(item.producto_id, newQuantity);
     }
 
     const newPedido = new Pedido(data);
