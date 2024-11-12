@@ -24,11 +24,8 @@ export default function Home() {
               </div>
               <h2 className="text-xl font-semibold">Vendedores</h2>
               <p className="text-muted-foreground">
-                Acceso para personal de ventas
+                Personal de ventas
               </p>
-              <Link href="/vendedor" className="w-full">
-                <Button className="w-full">Ingresar como Vendedor</Button>
-              </Link>
             </div>
           </Card>
 
@@ -39,11 +36,8 @@ export default function Home() {
               </div>
               <h2 className="text-xl font-semibold">Bodega</h2>
               <p className="text-muted-foreground">
-                Acceso para personal de bodega
+                Personal de bodega
               </p>
-              <Link href="/bodega" className="w-full">
-                <Button className="w-full">Ingresar como Bodeguero</Button>
-              </Link>
             </div>
           </Card>
 
@@ -56,11 +50,14 @@ export default function Home() {
               <p className="text-muted-foreground">
                 Gestión de inventario y usuarios
               </p>
-              <Link href="/admin" className="w-full">
-                <Button className="w-full">Ingresar como Admin</Button>
-              </Link>
             </div>
           </Card>
+        </div>
+
+        <div className="flex justify-center p-10">
+          <Link href="/login">
+            <Button className="px-8 py-4 text-xl">Iniciar Sesión</Button>
+          </Link>
         </div>
       </div>
     </main>

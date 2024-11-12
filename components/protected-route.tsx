@@ -16,7 +16,7 @@ export function ProtectedRoute({
 
   useEffect(() => {
     if (!user) {
-      router.push("/");
+      router.push("/login");
     } else if (user.role !== role) {
       router.push("/");
     }
