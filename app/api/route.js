@@ -4,6 +4,6 @@ const { dbConnect } = require('@/utils/mongodb');
 export async function GET() {
     dbConnect();
     return NextResponse.json(
-        { message: "Hello World" }
+        { message: "La API está funcionando correctamente" }
     );
 }

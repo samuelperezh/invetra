@@ -17,13 +17,13 @@ export default function AdminPage() {
     return (
       <div className="container mx-auto px-4 py-16">
         <h1 className="text-3xl font-bold text-center mb-8">Panel de Administración</h1>
-        <AuthForm role="admin" />
+        <AuthForm />
       </div>
     );
   }
 
   return (
-    <ProtectedRoute role="admin">
+    <ProtectedRoute requiredRole="admin">
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Panel de Administración</h1>

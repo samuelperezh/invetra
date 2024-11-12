@@ -10,30 +10,38 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 
-export function AuthForm({ role }: { role: 'vendedor' | 'bodeguero' | 'admin' }) {
+export function AuthForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ username: "", password: "" });
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
     try {
       const success = await login({
         username: formData.username,
         password: formData.password,
-        role,
       });
-
       if (success) {
+        console.log('Logged in user:', user);
         toast({
           title: "Inicio de sesión exitoso",
           description: "Bienvenido al sistema",
         });
-        router.refresh();
+
+        // Navigate to dashboard based on user role
+        if (user?.role === "vendedor") {
+          router.push("/vendedor");
+        } else if (user?.role === "bodeguero") {
+          router.push("/bodega");
+        } else if (user?.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       } else {
         toast({
           variant: "destructive",
@@ -42,6 +50,7 @@ export function AuthForm({ role }: { role: 'vendedor' | 'bodeguero' | 'admin' })
         });
       }
     } catch (error) {
+      console.error('Error during login:', error);
       toast({
         variant: "destructive",
         title: "Error",
@@ -51,19 +60,6 @@ export function AuthForm({ role }: { role: 'vendedor' | 'bodeguero' | 'admin' })
       setIsLoading(false);
     }
   };
-
-  const getRoleCredentials = () => {
-    switch (role) {
-      case 'vendedor':
-        return { email: 'vendedor@demo.com', password: 'vendedor123' };
-      case 'bodeguero':
-        return { email: 'bodega@demo.com', password: 'bodega123' };
-      case 'admin':
-        return { email: 'admin@demo.com', password: 'admin123' };
-    }
-  };
-
-  const credentials = getRoleCredentials();
 
   return (
     <Card className="p-6 w-full max-w-md mx-auto">
@@ -78,25 +74,18 @@ export function AuthForm({ role }: { role: 'vendedor' | 'bodeguero' | 'admin' })
             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             required
           />
-          <p className="text-xs text-muted-foreground">
-            Demo: {credentials.email}
-          </p>
         </div>
-
         <div className="space-y-2">
           <Label htmlFor="password">Contraseña</Label>
           <Input
             id="password"
             type="password"
+            placeholder="••••••••"
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
           />
-          <p className="text-xs text-muted-foreground">
-            Demo: {credentials.password}
-          </p>
         </div>
-
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
