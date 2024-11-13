@@ -15,8 +15,7 @@ const pedidoSchema = new Schema({
         },
         cantidad_solicitada: {
             type: Number,
-            required: true,
-            min: 1
+            required: true
         }
     }],
     estado: {

@@ -71,6 +71,8 @@ export default function AdminPage() {
       }
     }
     fetchProductos();
+    const interval = setInterval(fetchProductos, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
