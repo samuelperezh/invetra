@@ -1,0 +1,6 @@
+selenium
+pandas
+openpyxl
+webdriver_manager
+pyinstaller
+python-dotenv
