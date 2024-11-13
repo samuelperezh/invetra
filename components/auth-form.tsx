@@ -56,7 +56,7 @@ export function AuthForm() {
             description: "El rol seleccionado no coincide con el usuario.",
           });
         } else {
-          setUser(user);
+          setUser(user); // This will now automatically handle the cookie
 
           toast({
             title: "Inicio de sesión exitoso",

@@ -4,12 +4,12 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 
-export function ProtectedRoute({
-  children,
-  role,
-}: {
+export function ProtectedRoute({ 
+  children, 
+  role 
+}: { 
   children: React.ReactNode;
-  role: string;
+  role: "vendedor" | "bodega" | "admin";
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -18,7 +18,7 @@ export function ProtectedRoute({
     if (!user) {
       router.push("/login");
     } else if (user.rol !== role) {
-      router.push("/");
+      router.push(`/${user.rol}`);
     }
   }, [user, role, router]);
 

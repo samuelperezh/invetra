@@ -23,7 +23,7 @@ interface Pedido {
     _id: string;
     nombre: string;
   };
-  estado: 'pendiente' | 'en_progreso' | 'completado';
+  estado: 'pendiente' | 'en_progreso' | 'completado' | 'cancelado';
   items: {
     producto_id: Producto;
     cantidad_solicitada: number;

@@ -3,6 +3,7 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Package, Users, LineChart, LogOut, X } from "lucide-react";
 import { useAuth } from "@/lib/auth";
@@ -234,6 +235,16 @@ export default function AdminPage() {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    const colors = {
+      pendiente: "bg-yellow-100 text-yellow-800 border-yellow-200",
+      en_progreso: "bg-blue-100 text-blue-800 border-blue-200",
+      completado: "bg-green-100 text-green-800 border-green-200",
+      cancelado: "bg-red-100 text-red-800 border-red-200",
+    };
+    return colors[status as keyof typeof colors] || "";
+  };
+
   return (
     <ProtectedRoute role="admin">
       <div className="container mx-auto px-4 py-8">
@@ -273,25 +284,38 @@ export default function AdminPage() {
 
           <TabsContent value="inventory">
             <Card className="p-6">
-              <div className="text-center mb-4">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Inventario</h2>
                 <Button onClick={() => setShowProductModal(true)}>Agregar Producto</Button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {productos.map((producto) => (
-                  <Card key={producto._id} className="p-4 relative">
-                    <button
-                      className="absolute top-2 right-2 text-red-500"
-                      onClick={() => {
-                        setProductoToDelete(producto);
-                        setShowDeleteModal(true);
-                      }}
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                    <img src={producto.imagen_url} alt={producto.nombre} className="w-full h-48 object-cover mb-4" />
-                    <h2 className="text-xl font-bold">{producto.nombre}</h2>
-                    <p>Código de Barras: {producto.codigo_barras}</p>
-                    <p>Cantidad Disponible: {producto.cantidad_disponible}</p>
+                  <Card key={producto._id} className="overflow-hidden">
+                    <div className="relative h-48">
+                      <img src={producto.imagen_url} alt={producto.nombre} className="w-full h-full object-cover" />
+                      <button
+                        className="absolute top-2 right-2 p-1 bg-white rounded-full hover:bg-red-100"
+                        onClick={() => {
+                          setProductoToDelete(producto);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <X className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2">{producto.nombre}</h3>
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <p className="flex justify-between">
+                          <span>Código:</span>
+                          <span className="font-medium">{producto.codigo_barras}</span>
+                        </p>
+                        <p className="flex justify-between">
+                          <span>Stock:</span>
+                          <Badge variant="secondary">{producto.cantidad_disponible}</Badge>
+                        </p>
+                      </div>
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -300,77 +324,102 @@ export default function AdminPage() {
 
           <TabsContent value="users">
             <Card className="p-6">
-              <div className="text-center mb-4">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Usuarios</h2>
                 <Button onClick={() => setShowUserModal(true)}>Agregar Usuario</Button>
               </div>
-              <table className="min-w-full bg-white">
-                <thead>
-                  <tr>
-                    <th className="py-2">Nombre</th>
-                    <th className="py-2">Email</th>
-                    <th className="py-2">Rol</th>
-                    <th className="py-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuarios.map((usuario) => (
-                    <tr key={usuario._id}>
-                      <td className="py-2">{usuario.nombre}</td>
-                      <td className="py-2">{usuario.email}</td>
-                      <td className="py-2">
-                        <select
-                          value={usuario.rol}
-                          onChange={(e) => handleUpdateUsuario(usuario._id, e.target.value)}
-                        >
-                          <option value="vendedor">Vendedor</option>
-                          <option value="bodega">Bodega</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                      </td>
-                      <td className="py-2">
-                        <button
-                          className="text-red-500"
-                          onClick={() => {
-                            setUsuarioToDelete(usuario);
-                            setShowDeleteModal(true);
-                          }}
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {usuarios.map((usuario) => (
+                  <Card key={usuario._id} className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="font-semibold">{usuario.nombre}</h3>
+                        <p className="text-sm text-muted-foreground">{usuario.email}</p>
+                      </div>
+                      <button
+                        className="p-1 hover:bg-red-100 rounded-full"
+                        onClick={() => {
+                          setUsuarioToDelete(usuario);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <X className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
+                    <div className="mt-4">
+                      <select
+                        value={usuario.rol}
+                        onChange={(e) => handleUpdateUsuario(usuario._id, e.target.value)}
+                        className="w-full p-2 rounded-md border border-input bg-background"
+                      >
+                        <option value="vendedor">Vendedor</option>
+                        <option value="bodega">Bodega</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Registro: {new Date(usuario.fecha_registro).toLocaleDateString()}
+                    </p>
+                  </Card>
+                ))}
+              </div>
             </Card>
           </TabsContent>
 
           <TabsContent value="stats">
             <Card className="p-6">
-              <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold">Tablero Kanban de Pedidos</h2>
-              </div>
               <div className="grid grid-cols-4 gap-4">
-                {["pendiente", "en_progreso", "completado", "cancelado"].map((estado) => (
-                  <div key={estado} className="bg-gray-100 p-4 rounded-lg shadow">
-                    <h3 className="text-xl font-bold mb-2 capitalize">{estado === "en_progreso" ? "En progreso" : estado}</h3>
-                    {pedidos
-                      .filter((pedido) => pedido.estado === estado)
-                      .map((pedido) => (
-                        <div key={pedido._id} className="bg-white p-2 mb-2 rounded shadow">
-                          <p><strong>Vendedor:</strong> {pedido.vendedor_id.nombre}</p>
-                          <p><strong>Asignado a:</strong> {pedido.asignado_a ? pedido.asignado_a.nombre : "No asignado"}</p>
-                          <p><strong>Fecha de Creación:</strong> {new Date(pedido.fecha_creacion).toLocaleDateString()}</p>
-                          <p><strong>Items:</strong></p>
-                          <ul>
-                            {pedido.items.map((item) => (
-                              <li key={item.producto_id._id}>
-                                {item.producto_id.nombre} - Cantidad: {item.cantidad_solicitada}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+                {(['pendiente', 'en_progreso', 'completado', 'cancelado'] as const).map((estado) => (
+                  <div key={estado} className="space-y-4">
+                    <div className={`p-3 rounded-lg ${getStatusColor(estado)}`}>
+                      <h3 className="font-medium text-center capitalize">
+                        {estado.replace('_', ' ')}
+                      </h3>
+                    </div>
+                    <div className="space-y-4">
+                      {pedidos
+                        .filter((p) => p.estado === estado)
+                        .map((pedido) => (
+                          <Card key={pedido._id} className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <p className="text-sm text-muted-foreground">
+                                  Pedido #{pedido._id.slice(-6)}
+                                </p>
+                                <p className="font-medium">
+                                  Vendedor: {pedido.vendedor_id.nombre}
+                                </p>
+                              </div>
+                              <Badge variant="secondary">
+                                {pedido.estado.replace('_', ' ')}
+                              </Badge>
+                            </div>
+                            <div className="space-y-2">
+                              {pedido.items.map((item) => (
+                                <div
+                                  key={item.producto_id._id}
+                                  className="flex justify-between items-center text-sm"
+                                >
+                                  <span>{item.producto_id.nombre}</span>
+                                  <span className="font-medium">
+                                    x{item.cantidad_solicitada}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="pt-2 border-t">
+                              <p className="text-sm text-muted-foreground">
+                                {new Date(pedido.fecha_creacion).toLocaleString()}
+                              </p>
+                              {pedido.asignado_a && (
+                                <p className="text-sm text-muted-foreground">
+                                  Asignado a: {pedido.asignado_a.nombre}
+                                </p>
+                              )}
+                            </div>
+                          </Card>
+                        ))}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -380,92 +429,113 @@ export default function AdminPage() {
       </div>
 
       {showProductModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl mb-4">Agregar Nuevo Producto</h2>
-            <input
-              type="text"
-              name="nombre"
-              placeholder="Nombre"
-              value={newProducto.nombre}
-              onChange={handleInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <input
-              type="text"
-              name="codigo_barras"
-              placeholder="Código de Barras"
-              value={newProducto.codigo_barras}
-              onChange={handleInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <input
-              type="text"
-              name="imagen_url"
-              placeholder="URL de la Imagen"
-              value={newProducto.imagen_url}
-              onChange={handleInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <input
-              type="number"
-              name="cantidad_disponible"
-              placeholder="Cantidad Disponible"
-              value={newProducto.cantidad_disponible}
-              onChange={handleInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <div className="flex justify-end gap-2">
-              <Button onClick={() => setShowProductModal(false)}>Cancelar</Button>
-              <Button onClick={handleCreateProducto}>Crear</Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <Card className="w-full max-w-md p-6">
+            <h2 className="text-2xl font-bold mb-6">Agregar Nuevo Producto</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Nombre del Producto</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={newProducto.nombre}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Código de Barras</label>
+                <input
+                  type="text"
+                  name="codigo_barras"
+                  value={newProducto.codigo_barras}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">URL de la Imagen</label>
+                <input
+                  type="text"
+                  name="imagen_url"
+                  value={newProducto.imagen_url}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Cantidad Disponible</label>
+                <input
+                  type="number"
+                  name="cantidad_disponible"
+                  value={newProducto.cantidad_disponible}
+                  onChange={handleInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
             </div>
-          </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setShowProductModal(false)}>Cancelar</Button>
+              <Button onClick={handleCreateProducto}>Crear Producto</Button>
+            </div>
+          </Card>
         </div>
       )}
 
       {showUserModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl mb-4">Agregar Nuevo Usuario</h2>
-            <input
-              type="text"
-              name="nombre"
-              placeholder="Nombre"
-              value={newUsuario.nombre}
-              onChange={handleUsuarioInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={newUsuario.email}
-              onChange={handleUsuarioInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <input
-              type="password"
-              name="contraseña"
-              placeholder="Contraseña"
-              value={newUsuario.contraseña}
-              onChange={handleUsuarioInputChange}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            />
-            <select
-              name="rol"
-              value={newUsuario.rol}
-              onChange={(e) => setNewUsuario({ ...newUsuario, rol: e.target.value })}
-              className="mb-2 p-2 border border-gray-300 rounded w-full"
-            >
-              <option value="vendedor">Vendedor</option>
-              <option value="bodega">Bodega</option>
-              <option value="admin">Admin</option>
-            </select>
-            <div className="flex justify-end gap-2">
-              <Button onClick={() => setShowUserModal(false)}>Cancelar</Button>
-              <Button onClick={handleCreateUsuario}>Crear</Button>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <Card className="w-full max-w-md p-6">
+            <h2 className="text-2xl font-bold mb-6">Agregar Nuevo Usuario</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">Nombre</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={newUsuario.nombre}
+                  onChange={handleUsuarioInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={newUsuario.email}
+                  onChange={handleUsuarioInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Contraseña</label>
+                <input
+                  type="password"
+                  name="contraseña"
+                  value={newUsuario.contraseña}
+                  onChange={handleUsuarioInputChange}
+                  className="w-full p-2 rounded-md border border-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">Rol</label>
+                <select
+                  name="rol"
+                  value={newUsuario.rol}
+                  onChange={(e) => setNewUsuario({ ...newUsuario, rol: e.target.value })}
+                  className="w-full p-2 rounded-md border border-input"
+                >
+                  <option value="vendedor">Vendedor</option>
+                  <option value="bodega">Bodega</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
             </div>
-          </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setShowUserModal(false)}>Cancelar</Button>
+              <Button onClick={handleCreateUsuario}>Crear Usuario</Button>
+            </div>
+          </Card>
         </div>
       )}
 

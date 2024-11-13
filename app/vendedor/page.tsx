@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Package, LogOut, Minus, Plus, Trash2, CheckCircle } from "lucide-react";
 import axios from "axios";
@@ -44,6 +45,16 @@ interface Pedido {
   fecha_creacion: string;
   fecha_actualizacion: string;
 }
+
+const getStatusColor = (status: string) => {
+  const colors = {
+    pendiente: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    en_progreso: "bg-blue-100 text-blue-800 border-blue-200",
+    completado: "bg-green-100 text-green-800 border-green-200",
+    cancelado: "bg-red-100 text-red-800 border-red-200",
+  };
+  return colors[status as keyof typeof colors] || "";
+};
 
 export default function VendedorPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -129,24 +140,29 @@ export default function VendedorPage() {
 
   const findLeastBusyBodega = async () => {
     try {
-      // Get all bodega users and their pending/in-progress orders count
       const usuariosResponse = await axios.get<Usuario[]>('/api/usuarios');
       const bodegaUsers = usuariosResponse.data.filter(u => u.rol === 'bodega');
       
-      const pedidosResponse = await axios.get('/api/pedidos');
+      const pedidosResponse = await axios.get<Pedido[]>('/api/pedidos');
       const activePedidos = pedidosResponse.data.filter(
-        (p: any) => p.estado === 'pendiente' || p.estado === 'en_progreso'
+        p => p.estado === 'pendiente' || p.estado === 'en_progreso'
       );
 
-      // Count active orders per bodega user
-      const orderCounts = bodegaUsers.map(user => ({
-        userId: user._id,
-        count: activePedidos.filter((p: any) => p.asignado_a === user._id).length
-      }));
+      // Count active orders for each bodega user
+      const orderCounts = bodegaUsers.map(user => {
+        const activeOrderCount = activePedidos.filter(
+          p => p.asignado_a?._id === user._id
+        ).length;
+        
+        return {
+          user,
+          count: activeOrderCount
+        };
+      });
 
-      // Find user with least orders
+      // Sort by order count and get the user with least orders
       const leastBusy = orderCounts.sort((a, b) => a.count - b.count)[0];
-      return leastBusy?.userId;
+      return leastBusy?.user._id;
     } catch (error) {
       console.error('Error finding least busy bodega:', error);
       return null;
@@ -197,34 +213,48 @@ export default function VendedorPage() {
 
   const renderPedidoCard = (pedido: Pedido) => {
     return (
-      <Card key={pedido._id} className="mb-4 p-4">
-        <div className="flex justify-between items-start mb-2">
+      <Card key={pedido._id} className="p-4 space-y-3">
+        <div className="flex justify-between items-start">
           <div>
-            <p className="font-medium">Pedido #{pedido._id.slice(-6)}</p>
             <p className="text-sm text-muted-foreground">
-              {new Date(pedido.fecha_creacion).toLocaleString()}
+              Pedido #{pedido._id.slice(-6)}
             </p>
-            <p className="text-sm text-muted-foreground">
+            <p className="font-medium">
               Asignado a: {pedido.asignado_a.nombre}
             </p>
           </div>
-          {pedido.estado === 'pendiente' && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => handleCancelPedido(pedido._id)}
-            >
-              Cancelar
-            </Button>
-          )}
+          <div className="flex gap-2">
+            <Badge variant="secondary">
+              {pedido.estado.replace('_', ' ')}
+            </Badge>
+            {pedido.estado === 'pendiente' && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleCancelPedido(pedido._id)}
+              >
+                Cancelar
+              </Button>
+            )}
+          </div>
         </div>
         <div className="space-y-2">
           {pedido.items.map((item) => (
-            <div key={item._id} className="text-sm flex justify-between">
+            <div
+              key={item._id}
+              className="flex justify-between items-center text-sm"
+            >
               <span>{item.producto_id.nombre}</span>
-              <span>Cantidad: {item.cantidad_solicitada}</span>
+              <span className="font-medium">
+                x{item.cantidad_solicitada}
+              </span>
             </div>
           ))}
+        </div>
+        <div className="pt-2 border-t">
+          <p className="text-sm text-muted-foreground">
+            {new Date(pedido.fecha_creacion).toLocaleString()}
+          </p>
         </div>
       </Card>
     );
@@ -385,7 +415,7 @@ export default function VendedorPage() {
               <div className="grid grid-cols-4 gap-4">
                 {(['pendiente', 'en_progreso', 'completado', 'cancelado'] as const).map((estado) => (
                   <div key={estado} className="space-y-4">
-                    <div className="bg-secondary p-2 rounded-lg">
+                    <div className={`p-3 rounded-lg ${getStatusColor(estado)}`}>
                       <h3 className="font-medium text-center capitalize">
                         {estado.replace('_', ' ')}
                       </h3>

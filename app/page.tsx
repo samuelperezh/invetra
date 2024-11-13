@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -11,16 +10,13 @@ import { useAuth } from "@/lib/auth";
 
 export default function Home() {
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const storedUser = Cookies.get("user");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setUser(user);
+    if (user) {
       router.push(`/${user.rol}`);
     }
-  }, [router, setUser]);
+  }, [user, router]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background to-muted">
