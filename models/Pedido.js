@@ -35,7 +35,6 @@ const pedidoSchema = new Schema({
     }
 });
 
-
 const Pedido = mongoose.models.Pedido || mongoose.model('Pedido', pedidoSchema);
 
 module.exports = Pedido;

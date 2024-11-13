@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Pedido from '@/models/Pedido';
-import Usuario from '@/models/Usuario'; // Import the Usuario model
+import Usuario from '@/models/Usuario';
+import Producto from '@/models/Producto';
 import { dbConnect } from '@/utils/mongodb';
 
 // Helper function to fetch user details

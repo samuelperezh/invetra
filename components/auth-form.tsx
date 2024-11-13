@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from 'sonner';
 import { useAuth } from "@/lib/auth";
 
 export function AuthForm() {
@@ -24,7 +24,6 @@ export function AuthForm() {
     rol: "vendedor",
   });
   const router = useRouter();
-  const { toast } = useToast();
   const { setUser } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,16 +49,13 @@ export function AuthForm() {
         if (user.rol !== formData.rol) {
           setErrorMessage("Rol seleccionado incorrecto.");
           setTimeout(() => setErrorMessage(""), 5000);
-          toast({
-            variant: "destructive",
-            title: "Error de rol",
+          toast.error("Error de rol", {
             description: "El rol seleccionado no coincide con el usuario.",
           });
         } else {
           setUser(user); // This will now automatically handle the cookie
 
-          toast({
-            title: "Inicio de sesión exitoso",
+          toast.success("Inicio de sesión exitoso", {
             description: "Bienvenido al sistema",
           });
           router.push(`/${formData.rol}`);
@@ -68,18 +64,14 @@ export function AuthForm() {
         const errorData = await response.json();
         setErrorMessage(errorData.message || "Credenciales inválidas.");
         setTimeout(() => setErrorMessage(""), 5000);
-        toast({
-          variant: "destructive",
-          title: "Error de autenticación",
+        toast.error("Error de autenticación", {
           description: errorData.message || "Credenciales inválidas.",
         });
       }
     } catch (error) {
       setErrorMessage("Ocurrió un error al iniciar sesión.");
       setTimeout(() => setErrorMessage(""), 5000);
-      toast({
-        variant: "destructive",
-        title: "Error",
+      toast.error("Error", {
         description: "Ocurrió un error al iniciar sesión.",
       });
     } finally {
