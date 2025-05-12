@@ -23,11 +23,24 @@ async function fetchProductDetails(productId) {
 }
 
 // Helper function to update product quantity
-async function updateProductQuantity(productId, newQuantity) {
+async function updateProductQuantity(productId, newQuantity, reason) {
   const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cantidad_disponible: newQuantity })
+    body: JSON.stringify({ cantidad_disponible: newQuantity, razon_cambio: reason})
+  });
+  if (!response.ok) {
+    throw new Error(`Error updating product quantity for producto_id ${productId}`);
+  }
+  return response.json();
+}
+
+//Same function without modify the reason
+async function updateProductQuantityWR(productId, newQuantity) {
+  const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ cantidad_disponible: newQuantity})
   });
   if (!response.ok) {
     throw new Error(`Error updating product quantity for producto_id ${productId}`);
@@ -96,7 +109,7 @@ export async function PUT(request, { params }) {
 
         // Update product quantity
         const newQuantity = producto.cantidad_disponible + originalCantidadSolicitada - item.cantidad_solicitada;
-        await updateProductQuantity(item.producto_id, newQuantity);
+        await updateProductQuantityWR(item.producto_id, newQuantity);
       }
     }
 
@@ -129,7 +142,10 @@ export async function DELETE(request, { params }) {
       }
 
       const newQuantity = producto.cantidad_disponible + item.cantidad_solicitada;
-      await updateProductQuantity(item.producto_id, newQuantity);
+      console.log("Break")
+      await updateProductQuantity(item.producto_id, newQuantity,
+        `Un vendedor cancelo un pedido con ${item.cantidad_solicitada} unidad/es`
+      );
     }
 
     // Update pedido estado to cancelado and set cantidad_solicitada to 0

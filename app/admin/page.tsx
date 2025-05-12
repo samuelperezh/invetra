@@ -17,6 +17,7 @@ interface Producto {
   codigo_barras: string;
   imagen_url: string;
   cantidad_disponible: number;
+  razon_cambio: String;
   fecha_actualizacion: string;
 }
 
@@ -53,6 +54,7 @@ export default function AdminPage() {
     codigo_barras: "",
     imagen_url: "",
     cantidad_disponible: 1,
+    razon_cambio: "Creado por el administrador"
   });
   const [newUsuario, setNewUsuario] = useState({
     email: "",
@@ -135,6 +137,7 @@ export default function AdminPage() {
         codigo_barras: "",
         imagen_url: "",
         cantidad_disponible: 1,
+        razon_cambio: "Creado por el administrador"
       });
     } catch (error) {
       console.error("Error al crear el producto:", error);
@@ -319,6 +322,10 @@ export default function AdminPage() {
                           <span>Ultima fecha de actualizacion:</span>
                           <span className="font-medium">{new Date(producto.fecha_actualizacion).toLocaleString()}</span>
                         </p>
+                        <p className="flex justify-between">
+                          <span>Ultimo Cambio:</span>
+                          <span className="font-medium">{producto.razon_cambio}</span>
+                        </p>
                       </div>
                     </div>
                   </Card>
@@ -414,7 +421,10 @@ export default function AdminPage() {
                             </div>
                             <div className="pt-2 border-t">
                               <p className="text-sm text-muted-foreground">
-                                {new Date(pedido.fecha_creacion).toLocaleString()}
+                                Creacion: {new Date(pedido.fecha_creacion).toLocaleString()}
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                Ultima Actualizacion: {new Date(pedido.fecha_actualizacion).toLocaleString()}
                               </p>
                               {pedido.asignado_a && (
                                 <p className="text-sm text-muted-foreground">

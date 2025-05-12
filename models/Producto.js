@@ -19,6 +19,9 @@ const productoSchema = new Schema(
     cantidad_disponible: {
       type: Number,
       default: 1
+    },
+    razon_cambio: {
+      type: String
     }
   },
   {

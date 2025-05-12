@@ -23,15 +23,16 @@ async function fetchProductDetails(productId) {
 }
 
 // Helper function to update product quantity
-async function updateProductQuantity(productId, newQuantity) {
+async function updateProductQuantity(productId, newQuantity, reason) {
   const response = await fetch(`http://localhost:3000/api/productos/${productId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ cantidad_disponible: newQuantity })
+    body: JSON.stringify({ cantidad_disponible: newQuantity, razon_cambio: reason })
   });
   if (!response.ok) {
     throw new Error(`Error updating product quantity for producto_id ${productId}`);
   }
+  console.log(reason)
   return response.json();
 }
 
@@ -78,7 +79,9 @@ export async function POST(request) {
       }
       // Update product quantity
       const newQuantity = producto.cantidad_disponible - item.cantidad_solicitada;
-      await updateProductQuantity(item.producto_id, newQuantity);
+      await updateProductQuantity(item.producto_id, newQuantity, 
+        `El vendedor ${vendedor.nombre} pidio un pedido con ${item.cantidad_solicitada} unidad/es`
+      ); //Actualizo
     }
 
     const newPedido = new Pedido(data);

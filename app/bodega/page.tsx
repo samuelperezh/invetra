@@ -89,7 +89,6 @@ export default function BodegaPage() {
       return;
     }
 
-    //Funcion de modal
     updatePedidoStatus(pedidoId, destinationStatus);
   };
 
