@@ -6,7 +6,7 @@ import { dbConnect } from '@/utils/mongodb';
 
 // Helper function to fetch user details
 async function fetchUserDetails(userId) {
-  const response = await fetch(`/api/usuarios/${userId}`);
+  const response = await fetch(`https://invetra.vercel.app/api/usuarios/${userId}`);
   if (!response.ok) {
     throw new Error('Error fetching user details');
   }
@@ -15,7 +15,7 @@ async function fetchUserDetails(userId) {
 
 // Helper function to fetch product details
 async function fetchProductDetails(productId) {
-  const response = await fetch(`/api/productos/${productId}`);
+  const response = await fetch(`https://invetra.vercel.app/api/productos/${productId}`);
   if (!response.ok) {
     throw new Error(`producto_id ${productId} no válido o no existe`);
   }
@@ -24,7 +24,7 @@ async function fetchProductDetails(productId) {
 
 // Helper function to update product quantity
 async function updateProductQuantity(productId, newQuantity, reason) {
-  const response = await fetch(`/api/productos/${productId}`, {
+  const response = await fetch(`https://invetra.vercel.app/api/productos/${productId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cantidad_disponible: newQuantity, razon_cambio: reason })
