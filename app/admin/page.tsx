@@ -17,6 +17,7 @@ interface Producto {
   codigo_barras: string;
   imagen_url: string;
   cantidad_disponible: number;
+  fecha_actualizacion: string;
 }
 
 interface Usuario {
@@ -313,6 +314,10 @@ export default function AdminPage() {
                         <p className="flex justify-between">
                           <span>Stock:</span>
                           <Badge variant="secondary">{producto.cantidad_disponible}</Badge>
+                        </p>
+                        <p className="flex justify-between">
+                          <span>Ultima fecha de actualizacion:</span>
+                          <span className="font-medium">{new Date(producto.fecha_actualizacion).toLocaleString()}</span>
                         </p>
                       </div>
                     </div>
