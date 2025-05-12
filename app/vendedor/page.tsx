@@ -176,6 +176,7 @@ export default function VendedorPage() {
     try {
       const bodegaUserId = await findLeastBusyBodega();
       
+      //dar una razon vacia
       const pedidoData = {
         vendedor_id: user._id,
         items: cartItems.map(item => ({
@@ -253,7 +254,12 @@ export default function VendedorPage() {
         </div>
         <div className="pt-2 border-t">
           <p className="text-sm text-muted-foreground">
-            {new Date(pedido.fecha_creacion).toLocaleString()}
+            Fecha de Creacion: {new Date(pedido.fecha_creacion).toLocaleString()}
+          </p>
+        </div>
+        <div className="pt-2 border-t">
+          <p className="text-sm text-muted-foreground">
+            Fecha de Actualizacion: {new Date(pedido.fecha_actualizacion).toLocaleString()}
           </p>
         </div>
       </Card>

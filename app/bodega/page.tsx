@@ -29,6 +29,7 @@ interface Pedido {
     cantidad_solicitada: number;
   }[];
   fecha_creacion: string;
+  fecha_actualizacion: string;
   asignado_a: {
     _id: string;
     nombre: string;
@@ -88,6 +89,7 @@ export default function BodegaPage() {
       return;
     }
 
+    //Funcion de modal
     updatePedidoStatus(pedidoId, destinationStatus);
   };
 
@@ -182,7 +184,12 @@ export default function BodegaPage() {
                                   </div>
                                   <div className="pt-2 border-t">
                                     <p className="text-sm text-muted-foreground">
-                                      {new Date(pedido.fecha_creacion).toLocaleString()}
+                                      Fecha de creacion: {new Date(pedido.fecha_creacion).toLocaleString()}
+                                    </p>
+                                  </div>
+                                  <div className="pt-2 border-t">
+                                    <p className="text-sm text-muted-foreground">
+                                      Fecha de Actualizacion: {new Date(pedido.fecha_actualizacion).toLocaleString()}
                                     </p>
                                   </div>
                                 </Card>
